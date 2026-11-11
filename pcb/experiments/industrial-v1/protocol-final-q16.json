@@ -1,0 +1,69 @@
+{
+  "schema_version": "industrial-compile-v1",
+  "source_scope": "visa-pcb1-4-official",
+  "official_split_csv": "source/1cls.csv",
+  "dataset_id": "VisA-PCB1-4",
+  "dataset_version": "VisA_20220922__spot-diff_2a692ab575001cbde74d402d897a7286086c6199",
+  "long_side": 512,
+  "margin": 32,
+  "horizontal_fov_degrees": 60.0,
+  "exposure_seconds": 0.02,
+  "map_scale_px": 16.0,
+  "samples_per_interval": 16,
+  "angle_levels_deg": [
+    0.5,
+    1.0,
+    1.5
+  ],
+  "profile_catalog": {
+    "linear": [
+      1,
+      1,
+      1,
+      1
+    ],
+    "early": [
+      2,
+      2,
+      0,
+      0
+    ],
+    "late": [
+      0,
+      0,
+      2,
+      2
+    ],
+    "return": [
+      2,
+      2,
+      -2,
+      -2
+    ],
+    "noncollinear": [
+      [
+        1,
+        0,
+        0
+      ],
+      [
+        0,
+        1,
+        0
+      ],
+      [
+        0,
+        0,
+        1
+      ],
+      [
+        1,
+        1,
+        1
+      ]
+    ]
+  },
+  "orientation_rule": "sha256-pcg64-unit-quaternion-v1",
+  "split_seed": "IMDA-TII-PCB-v1-source-split-20261105",
+  "trajectory_seed": "IMDA-TII-PCB-v1-trajectory-20261105"
+}

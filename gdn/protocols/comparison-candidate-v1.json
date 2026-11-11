@@ -1,0 +1,124 @@
+{
+  "schema": "gdn-start-comparison-plan-v1",
+  "status": "candidate; independent design/code review required before formal optimization",
+  "created_utc": "2026-11-05T14:51:02.588598+00:00",
+  "question": "Common-budget comparison of an explicitly start-reference-adapted GDN architecture with the matched IMDA full model; not an encoding-only causal contrast or original-paper full recipe reproduction",
+  "primary_unchanged": {
+    "training_plan_sha256": "d61f62c0f80cd4b6e2b14e559142d9e9960b35b69c49446c1ca0cc9ca1648758",
+    "q16_protocol_sha256": "86778bc7cf0b77074e1e30846124cfd6ffd64417085b81a8bbdfb6f7944f3e86",
+    "evaluation_addendum_sha256": "f247bd244041c451e20389b2e6359568f7ee8041242eeee6e039faa753e44420",
+    "main_nine_runs": "unchanged; same completed artifacts reused; no rerun or changed budgets",
+    "source_manifest_sha256": "f72803e8fbde0ada85389f63808b581e03d927c7782d869ab53d55a53282dfd6"
+  },
+  "data": {
+    "use": "same frozen C3 allocation and exact NPZ bytes, original blur/target/mask/ROI/source split",
+    "split_sources": {
+      "train": 2890,
+      "valid": 724,
+      "test": 802
+    },
+    "npz_counts": {
+      "train": 2890,
+      "valid": 2172,
+      "test": 2406
+    },
+    "target": "exposure start S0, no GT/prediction reference warp",
+    "TEST": "retain all802x3 levels; no quality-based exclusions; no TEST output seen or checkpoint chosen"
+  },
+  "encoding": {
+    "identifier": "gdn-start-cmf-v1",
+    "input": "raw four camera-body rates from pinned q16 metadata; K_crop",
+    "times": "nine equal exposure nodes0..20ms ->8 consecutive forward projection increments from start reference",
+    "shape": "16 channels on stride2 lattice, full-resolution pixel displacement units; no /2 or /16",
+    "training_crop": "exact stateless top/left (including odd); evaluate half lattice at actual crop pixel centers",
+    "rgb_padding": "right/bottom constant zero to multiple8 as official RGB convention",
+    "gyro_padding": "analytic projected field extended at actual padded half-lattice coordinates",
+    "output": "crop padding only; retain exact originalROI/availability and labels"
+  },
+  "architecture": {
+    "official_commit": "ff8beec5d0af6e8e132bbff1db19ce46247ce869",
+    "width": 32,
+    "encoder_blocks": [
+      2,
+      2,
+      2
+    ],
+    "middle_blocks": 16,
+    "decoder_blocks": [
+      1,
+      1,
+      1
+    ],
+    "gyro_args": "identical ideal CMF passed to both accurate/inaccurate inputs, epoch100",
+    "weights": "from scratch only, no public pretrained/pilot weights",
+    "differing_from_native_method": [
+      "start target/CMF reference instead ofcenter",
+      "same ideal CMF for bothbranches, no erroneous-prior curriculum",
+      "common fixed optimization budget/linear finalL1 instead of full original RSBlur recipe"
+    ]
+  },
+  "optimization": {
+    "seeds": [
+      0,
+      1,
+      2
+    ],
+    "updates": 20000,
+    "batch_size": 4,
+    "patch_size": 224,
+    "Adam": {
+      "lr": 0.0001,
+      "betas": [
+        0.9,
+        0.999
+      ],
+      "eps": 1e-08,
+      "weight_decay": 0.0,
+      "foreach": false,
+      "fused": false,
+      "capturable": false,
+      "amsgrad": false,
+      "maximize": false
+    },
+    "loss": "final-resolution masked linear-RGB spatial L1; no clamp, FFT or multiscale loss",
+    "sampling": "reuse E3 NumPy PCG64 SeedSequence([seed,update,0x1ADA]) exact source/crop order, independent ofarchitecture",
+    "initialization": "same numeric seeds, distinct architecture parameter shapes/distribution; do not claim identical initial weights across architectures",
+    "validation": "all2172 normal-valid variants every1000 updates, min scalar-weighted unclippedlinearMAE, earliestties",
+    "checkpoint_interval": 5000,
+    "full_budget": "all3 seeds fixed20k, no must-win/early stopping; failure retains partial and stops"
+  },
+  "backend": {
+    "device": "cuda:0 RTX3090 dedicated environment",
+    "precision": "FP32; TF32off; CuDNNbenchmarkFalse; CUBLAS_WORKSPACE_CONFIG4096:8",
+    "GDN_deterministic_algorithms": false,
+    "reason": "Actual2.7+cu128/torchvision0.22 CUDA DCN forward succeeded but compute_grad_input deterministic backward rejected; CPU deterministic backward succeeded",
+    "exception_scope": "this separately declared GDN process only; primary9 retain their true deterministic setting",
+    "reproducibility": "seeded/recorded artifacts and samples, no bitwise CUDA guarantee; do not hide backend difference"
+  },
+  "downstream": {
+    "banks": "same4 final clean-normal banks as primary study",
+    "thresholds": "same normal-valid95th-higher rule, independent thresholds for new GDN branches",
+    "scores": "M3/E3 unchanged linear restoration and original-grid task/coverage definitions",
+    "statistics": {
+      "status": "exploratory external system comparison, separate from unchanged f247 co-primary",
+      "contrast": "IMDA full_maps minus GDN-start, paired by same source/strength/seed labels",
+      "metrics": {
+        "linear_MSE_reduction": "mean per-source GDN_start_MSE minus IMDA_full_MSE; positive favors IMDA",
+        "image_AUROC_difference": "AUROC_IMDAfull minus AUROC_GDNstart; positive favors IMDA",
+        "image_AP_difference": "AP_IMDAfull minus AP_GDNstart; positive favors IMDA"
+      },
+      "aggregation": "within each category x strength x seed compute per-source MSE effect mean or recomputed rank difference; equal3seeds,4categories,3strengths. Display all3seed point effects/range separately. Descriptive restorationPSNR retains pooledE3definition; not substituted for per-source primaryMSE.",
+      "resampling": "original source image cluster; all3strengths, all3trained seeds and bothconditions retain identical multiplicity. Four PCB categories x originalbinarylabel strata, stratum count fixed; sourceIDs lexicographic in category then numeric0normal/1anomaly order.",
+      "replicates": 5000,
+      "generator": "NumPy PCG64",
+      "seed": 20261105,
+      "interval": "95% percentile, quantiles(.025,.975), numpy.quantile method=linear; recordNumPy version and multiplicity SHA",
+      "rank_rule": "recompute AUROC/noninterpolatedAP in every class x strength x seed using integer source multiplicities and original labels/scores, then macro; never average per-imageAUC or treatseed/imagevariants/pixels as independentn",
+      "identity": "actual checkpoint/report/bank/threshold/data/adapter identities must be externally pinned; samebank and originalROI, independentnormal-valid calibration for each GDN branch",
+      "missing": "retain full802x3x3 expected coverage; missing/nonfinite/failedprediction -> incomplete study, no hidden drop/fallback. ZeroMSE finite, perfectPSNR flags descriptive, pixelmetrics not pixel-IIDbootstrapped.",
+      "interpretation": "conditional on realized trained checkpoints and fixedbenchmark/labelprevalence; unknown physicalboard/session and populationseed/nondeterministicCUDAtraining variability not estimated; no newconfirmatoryalpha/pvalue/SOTA or encoding-onlycausalclaim; null/reversed effects retained",
+      "reuse": "share f247/S2 mathematical estimator/resampling definitions where unchanged, but explicit new GDN record normalization/identity join must be implemented/reviewed; existing3mode S2 normalizer is not silently reused as if it already accepted GDN"
+    }
+  },
+  "dispatch": "Synthetic operator/native-shape engineering probes are allowed before data completion. Formal optimization requires independent design/code review, full actual-data preflight, explicit configuration freeze and real normal-TRAIN resource evidence. GPU formal GDN work is sequential to original nine; do not restart or change live primary jobs."
+}

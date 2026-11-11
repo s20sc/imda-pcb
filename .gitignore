@@ -1,0 +1,5 @@
+__pycache__/
+.venv/
+*.pyc
+/gdn/vendor/official/
+/pcb/code/revision/GAMD/

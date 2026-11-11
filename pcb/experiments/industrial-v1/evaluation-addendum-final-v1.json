@@ -1,0 +1,90 @@
+{
+  "schema": "industrial-evaluation-addendum-v1",
+  "status": "frozen-prior-to-formal-TEST-effects",
+  "created_utc": "2026-11-05T11:39:18.909629+00:00",
+  "training_plan_sha256": "d61f62c0f80cd4b6e2b14e559142d9e9960b35b69c49446c1ca0cc9ca1648758",
+  "base_protocol_sha256": "86778bc7cf0b77074e1e30846124cfd6ffd64417085b81a8bbdfb6f7944f3e86",
+  "reason": "R3 M1 motion correspondence and paired-statistics gaps remain after nine matched controls; no formal TEST prediction/task score has been read",
+  "training_change": "NONE: nine modes/seeds/budgets/init/selection unchanged; no retraining",
+  "counterfactual": {
+    "identifier": "full_checkpoint_with_Rz90_rotated_body_rates",
+    "rates_transform_camera_body_axes": [
+      [
+        0,
+        -1,
+        0
+      ],
+      [
+        1,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        1
+      ]
+    ],
+    "row_vector_implementation": "rates_wrong = rates_correct @ Rz90.T",
+    "angle_degrees": 90,
+    "transform_choice": "fixed for all source images/severities/seeds before TEST effects; do not search rotations for damage",
+    "physical_construction": "Reintegrate transformed four body-rate intervals using the existing SO(3) convention; recompute dense forward trajectories and timed quadratic C/E at identical K, exposure/fit times/quadrature/map_scale, then the same full-canvas common crop. Do not merely rotate 2D displacement vectors. No blur resynthesis.",
+    "preserved": [
+      "original RGB observation",
+      "sharp target",
+      "original label/mask",
+      "source sample order and ROI",
+      "correct original availability mask",
+      "four-interval relative profile",
+      "total angular path length",
+      "model best weights",
+      "class-specific shared clean-normal bank"
+    ],
+    "not_preserved_or_claimed": [
+      "pixel-space blur magnitude equality",
+      "descriptor correspondence to the unchanged blurred image"
+    ],
+    "checkpoint": "same best full_maps checkpoint as the correct branch for each seed; do not select a new checkpoint",
+    "threshold": "Reuse the frozen correct full_maps normal-valid threshold for the corresponding class/strength/seed; no new mismatch calibration",
+    "coverage": "all802 sources times3levels times3full-model seeds; no quality-based exclusion",
+    "descriptor_validity": "validate recomputed fit finite/valid over complete frozen ROI before inference; any invalid case records incomplete scope, never substitute correct maps or silently drop sources",
+    "metrics": "same restoration/image-ranking/originalROI pixel/coverage/clip definitions as main study; correct-minus-mismatched paired comparison, no required direction"
+  },
+  "statistics": {
+    "resampling_unit": "original source image as cluster; keep its three severities and all three seed predictions together",
+    "strata": "four PCB categories x original binary image label, preserving each stratum source count",
+    "replicates": 5000,
+    "generator": "NumPy PCG64",
+    "seed": 20261105,
+    "point_aggregation": "For each category/severity/seed compute paired source effects; average seeds and give equal weight to4categories and3severities. Report all three seed point effects/range separately.",
+    "primary_endpoints": [
+      {
+        "contrast": "full_maps versus rgb_zero_maps",
+        "metric": "mean per-source linear MSE reduction = zero_MSE - full_MSE; positive favors full",
+        "interval": "percentile bootstrap 97.5% (quantiles .0125,.9875)"
+      },
+      {
+        "contrast": "full_maps versus rgb_zero_maps",
+        "metric": "image AUROC_full - image AUROC_zero, recomputed with the same resampled source multiplicities for each branch",
+        "interval": "percentile bootstrap 97.5% (quantiles .0125,.9875)"
+      }
+    ],
+    "multiplicity": "two co-primary endpoints use Bonferroni alpha=.05/2 each; no unadjusted significance claim over all exploratory contrasts",
+    "secondary": "full vsendpoint, correct-full vsRz90-mismatched, image AP, and severity-specific effects: 95% exploratory percentile intervals, clearly labeled; no forced benefit or selective seed reporting",
+    "perfect_restoration": "MSE primary remains finite even at zero error; PSNR perfect flags/null remain descriptive, no hidden epsilon",
+    "pixel_metrics": "per-class/severity/mode/seed and macro descriptive; do not bootstrap pixels as independent observations",
+    "interpretation_limit": "benchmark source-image resampling conditional on the three trained seeds and fixed class/label prevalence; physical board/session independence and population training-seed uncertainty are not established",
+    "failure_or_null_effect": "retain all fixed seeds/strengths, no must-win stop or sign-driven protocol change",
+    "task_metric_aggregation": "Recompute AUROC/AP within each category x severity x seed from unchanged original labels/scores using sampled source multiplicities, then average seeds and macro categories/severities; never average nonexistent per-image AUCs.",
+    "interval_quantile_method": "numpy.quantile method=linear; record NumPy version",
+    "source_order": "strata sorted by category then original binary label; source IDs lexicographic within each stratum; draw with replacement from each stratum in that order per replicate",
+    "claim_rule": "Restoration and task endpoints support their own conclusions; any joint supported-benefit claim must be assessed against both co-primary endpoints. Null/reversed effects and exploratory status remain visible."
+  },
+  "base_result_coverage": "main sharp/blur/nine restoration branches remain separately auditable; addendum outcomes cannot be called part of an already completed study",
+  "frozen_utc": "2026-11-05T11:43:00.025150+00:00",
+  "independent_review": {
+    "path": "audit/2026-11-05-industrial-evaluation-addendum-independent-review.md",
+    "sha256": "18e06e26762b5213219d7ff61b0218f0a7044e6e5db68b7262c32c9377339989",
+    "scope": "design gaps only; execution and outcomes unverified, no scientific Accept"
+  }
+}
